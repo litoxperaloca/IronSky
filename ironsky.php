@@ -187,7 +187,7 @@
     add_action('init', 'ironsky_register_shortcodes');
     
     //agrego dependencisscexternas (js y css)
-	function ironsky_enqueue_scripts() {
+    function ironsky_enqueue_scripts() {
         //js de mapbox
         wp_enqueue_script('mapbox-gl-js', 'https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js', array(), null, false);
         //css mapbox
