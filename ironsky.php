@@ -74,7 +74,7 @@
                     container: 'map', // container ID
                     style: 'mapbox://styles/litoxperaloca/clpeazft8006q01pg8fghbgdl', // style URL
                     center: [-56.183321,  -34.911186], // starting position [lng, lat]
-                    zoom: 9, // starting zoom
+                    zoom: 5, // starting zoom
                     projection: 'globe',
                 });
                 map.on('load', async () => {
