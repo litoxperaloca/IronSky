@@ -2,7 +2,7 @@
 
 wp plugin to show 3d mapbox map and load realtime flights as map features
 
-#Requisites
+# Requisites
 
 Get apikey from mapbox
 https://account.mapbox.com/
@@ -10,7 +10,7 @@ https://account.mapbox.com/
 Get apikey from airlabs.co
 https://airlabs.co/signup
 
-#dev and testing apikeys:
+# dev and testing apikeys:
 
 mapbox: 
 
@@ -20,7 +20,7 @@ airlabs:
 
 7ff1aaea-1d07-4d50-9e43-f3d6bc3d6e66
 
-#Instalation:
+# Instalation:
 
 Install and activate plugin.
 
@@ -30,4 +30,4 @@ Use shortcode inside page or post: [ironsky]
 
 Also a widget available: IronSky
 
-Enjoy!
+# Enjoy
