@@ -10,7 +10,7 @@ https://account.mapbox.com/
 Get apikey from airlabs.co
 https://airlabs.co/signup
 
-# dev and testing apikeys (please use these keys only for teting):
+# dev and testing apikeys (please use these keys only for testing):
 
 mapbox: 
 
