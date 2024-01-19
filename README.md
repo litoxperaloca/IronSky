@@ -10,7 +10,7 @@ https://account.mapbox.com/
 Get apikey from airlabs.co
 https://airlabs.co/signup
 
-# dev and testing apikeys:
+# dev and testing apikeys (please use these keys only for teting):
 
 mapbox: 
 
@@ -22,12 +22,20 @@ airlabs:
 
 # Instalation:
 
-Install and activate plugin.
+Download: https://github.com/litoxperaloca/IronSky/releases/download/V1.0.0/ironsky.zip
 
-Set apikeys in admin menu -> IronSky
+Install and activate plugin from wp admin.
 
-Use shortcode inside page or post: [ironsky]
+Set apikeys in wp admin menu -> IronSky
 
-Also a widget available: IronSky
+# Usage
+
+## By Shortcode
+
+- Use this shortcode inside page or post: [ironsky]
+
+## By Widget
+
+- Widget available: IronSky
 
 # Enjoy
