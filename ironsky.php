@@ -22,12 +22,12 @@
 
 
         public function form($instance) {
-            $aviationstack_api_key = !empty($instance['aviationstack_api_key']) ? $instance['aviationstack_api_key'] : '';
+            $airlabs_api_key = !empty($instance['airlabs_api_key']) ? $instance['airlabs_api_key'] : '';
             $mapbox_api_key = !empty($instance['mapbox_api_key']) ? $instance['mapbox_api_key'] : '';
             ?>
             <p>
-                <label for="<?php echo esc_attr($this->get_field_id('aviationstack_api_key')); ?>">Aviationstack API Key:</label>
-                <input class="widefat" id="<?php echo esc_attr($this->get_field_id('aviationstack_api_key')); ?>" name="<?php echo esc_attr($this->get_field_name('aviationstack_api_key')); ?>" type="text" value="<?php echo esc_attr($aviationstack_api_key); ?>">
+                <label for="<?php echo esc_attr($this->get_field_id('airlabs_api_key')); ?>">Airlabs API Key:</label>
+                <input class="widefat" id="<?php echo esc_attr($this->get_field_id('airlabs_api_key')); ?>" name="<?php echo esc_attr($this->get_field_name('airlabs_api_key')); ?>" type="text" value="<?php echo esc_attr($airlabs_api_key); ?>">
             </p>
             <p>
                 <label for="<?php echo esc_attr($this->get_field_id('mapbox_api_key')); ?>">Mapbox API Key:</label>
@@ -40,7 +40,7 @@
 
         public function update($new_instance, $old_instance) {
             $instance = array();
-            $instance['aviationstack_api_key'] = (!empty($new_instance['aviationstack_api_key'])) ? strip_tags($new_instance['aviationstack_api_key']) : '';
+            $instance['airlabs_api_key'] = (!empty($new_instance['airlabs_api_key'])) ? strip_tags($new_instance['airlabs_api_key']) : '';
             $instance['mapbox_api_key'] = (!empty($new_instance['mapbox_api_key'])) ? strip_tags($new_instance['mapbox_api_key']) : '';
 
             return $instance;
@@ -54,21 +54,93 @@
             }
 
             // Claves API obtenidas desde el formulario del widget
-            $aviationstack_api_key = $instance['aviationstack_api_key'];
-            $mapbox_api_key = $instance['mapbox_api_key'];
-
+            //$airlabs_api_key = $instance['airlabs_api_key'];
+            //$mapbox_api_key = $instance['mapbox_api_key'];
+            $airlabs_api_key = get_option('airlabs_api_key');
+            $mapbox_api_key = get_option('mapbox_api_key');
             ?>
             <div id='map' style='width: 400px; height: 300px;'></div>
+            <style>
+                .mapboxgl-popup, .mapboxgl-popup h5, .mapboxgl-popup p{
+                color: #000000 !important;
+                }
+                .mapboxgl-popup h5{
+                font-size: 10pt;
+                }
+            </style>
             <script>
-                mapboxgl.accessToken = 'pk.eyJ1IjoibGl0b3hwZXJhbG9jYSIsImEiOiJjbGc3ZW95OGQwNXRtM2V0bHM3ZTcwajVmIn0.rZXdOoZoUFuJ2K4eFyxamg';
+                mapboxgl.accessToken = '<?php echo $mapbox_api_key; ?>';
                 const map = new mapboxgl.Map({
                     container: 'map', // container ID
                     style: 'mapbox://styles/litoxperaloca/clpeazft8006q01pg8fghbgdl', // style URL
                     center: [-56.183321,  -34.911186], // starting position [lng, lat]
                     zoom: 9, // starting zoom
+                    projection: 'globe',
+                });
+                map.on('load', async () => {
+                      map.loadImage(
+                'https://ironplatform.com.uy/wp-content/uploads/2024/01/plane.png',
+                (error, image) => {
+                if (error) throw error;
+                map.addImage('custom-marker', image);
+                        fetch('https://airlabs.co/api/v9/flights?_fields=hex,flag,lat,lng,dir,alt&zoom=8&api_key=<?php echo $airlabs_api_key; ?>')
+                        .then( response => response.json())
+                        .then(data =>{
+                            //console.log(data);
+                        
+                          const flights = data.response.map(flight => ({
+                            type: 'Feature',
+                            properties: {
+                                hex: flight.hex,
+                                flag: flight.flag,
+                                dir: flight.dir,
+                                alt: flight.alt
+                            },
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [flight.lng, flight.lat]
+                            }
+                            }));
+                            map.addSource('liveflights', {
+                            'type': 'geojson',
+                            'data': {
+                                    type: 'FeatureCollection',
+                                    features: flights
+                                }
+                            });
+                            // Add a symbol layer
+                            map.addLayer({
+                            'id': 'flights',
+                            'type': 'symbol',
+                            'source': 'liveflights',
+                            'layout': {
+                            'icon-image': 'custom-marker',
+                            'icon-size': 0.25,
+                                        'icon-rotate': ['get', 'dir']
+                
+                            }
+                            });
+                            map.on('click', 'flights', function(e) {
+                                var vuelo = e.features[0];
+                                var coordenadas = vuelo.geometry.coordinates.slice();
+                                var descripcion = '<br/><br/><br/><h5>Vuelo: ' + vuelo.properties.hex + '</h5><p>Flag: ' + vuelo.properties.flag + '</p><p>Altitud: ' + vuelo.properties.alt + ' metros</p>';
+                
+                                while (Math.abs(e.lngLat.lng - coordenadas[0]) > 180) {
+                                    coordenadas[0] += e.lngLat.lng > coordenadas[0] ? 360 : -360;
+                                }
+                
+                                    // Mostrar un Popup en la ubicación del clic con la información del vuelo
+                                    new mapboxgl.Popup()
+                                        .setLngLat(coordenadas)
+                                        .setHTML(descripcion)
+                                        .addTo(map);
+                                });
+                     
+                        })
+                        .catch(error => console.log(error));
+                    });
                 });
             </script>
-
 
             <?php
 
@@ -119,8 +191,8 @@
     }
     
     function ironsky_register_settings() {
-        // Registro de la configuración para Aviationstack API Key
-        register_setting('ironsky-settings', 'aviationstack_api_key');
+        // Registro de la configuración para airlabs API Key
+        register_setting('ironsky-settings', 'airlabs_api_key');
         // Registro de la configuración para Mapbox API Key
         register_setting('ironsky-settings', 'mapbox_api_key');
 
@@ -132,11 +204,11 @@
             'ironsky-settings'
         );
 
-        // Aviationstack API Key
+        // airlabs API Key
         add_settings_field(
-            'aviationstack_api_key_field',
-            'Aviationstack API Key',
-            'ironsky_api_key_field_callback',
+            'airlabs_api_key_field',
+            'Airlabs API Key',
+            'airlabs_api_key_field_callback',
             'ironsky-settings',
             'ironsky_settings_section'
         );
@@ -157,10 +229,10 @@
         echo '<p>Introduce las claves API para IronSky.</p>';
     }
 
-    function ironsky_api_key_field_callback() {
-        // Obtener el valor de Aviationstack API Key
-        $aviationstack_api_key = get_option('aviationstack_api_key');
-        echo '<input type="text" name="aviationstack_api_key" value="' . esc_attr($aviationstack_api_key) . '">';
+    function airlabs_api_key_field_callback() {
+        // Obtener el valor de airlabs API Key
+        $airlabs_api_key = get_option('airlabs_api_key');
+        echo '<input type="text" name="airlabs_api_key" value="' . esc_attr($airlabs_api_key) . '">';
 
     }
     
@@ -187,7 +259,7 @@
     add_action('init', 'ironsky_register_shortcodes');
     
     //agrego dependencisscexternas (js y css)
-    function ironsky_enqueue_scripts() {
+	function ironsky_enqueue_scripts() {
         //js de mapbox
         wp_enqueue_script('mapbox-gl-js', 'https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js', array(), null, false);
         //css mapbox
