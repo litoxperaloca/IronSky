@@ -1,6 +1,11 @@
+![logoIronSky](https://github.com/litoxperaloca/IronSky/assets/15147453/0d7f3340-b2fd-428a-9cf8-165d1052730d)
+
 # IronSky
 
-wp plugin to show 3d mapbox map and load realtime flights as map features
+WordPress plugin: This plugin shows a 3d mapbox’s map and loads realtime flights as map’s features.
+
+![scIronSky](https://github.com/litoxperaloca/IronSky/assets/15147453/08ed678c-4ce1-4959-92d7-3226128f2e60)
+
 
 # Requisites
 
@@ -10,7 +15,9 @@ https://account.mapbox.com/
 Get apikey from airlabs.co
 https://airlabs.co/signup
 
-# dev and testing apikeys (please use these keys only for testing):
+# dev and testing apikeys:
+
+(please use these keys only for testing)
 
 mapbox: 
 
@@ -20,7 +27,7 @@ airlabs:
 
 7ff1aaea-1d07-4d50-9e43-f3d6bc3d6e66
 
-# Instalation:
+# Installation:
 
 Download: https://github.com/litoxperaloca/IronSky/releases/download/V1.0.0/ironsky.zip
 
