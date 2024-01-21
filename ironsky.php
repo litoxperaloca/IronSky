@@ -58,8 +58,12 @@
             //$mapbox_api_key = $instance['mapbox_api_key'];
             $airlabs_api_key = get_option('airlabs_api_key');
             $mapbox_api_key = get_option('mapbox_api_key');
+            $map_width = get_option('map_width');
+            $map_height = get_option('map_height');
+            $map_zoom = get_option('map_zoom');
+
             ?>
-            <div id='map' style='width: 400px; height: 300px;'></div>
+            <div id='map' style='width: <?php echo $map_width; ?>px; height: <?php echo $map_height; ?>px;'></div>
             <style>
                 .mapboxgl-popup, .mapboxgl-popup h5, .mapboxgl-popup p{
                 color: #000000 !important;
@@ -74,7 +78,7 @@
                     container: 'map', // container ID
                     style: 'mapbox://styles/litoxperaloca/clpeazft8006q01pg8fghbgdl', // style URL
                     center: [-56.183321,  -34.911186], // starting position [lng, lat]
-                    zoom: 5, // starting zoom
+                    zoom: <?php echo $map_zoom; ?>, // starting zoom
                     projection: 'globe',
                 });
                 map.on('load', async () => {
@@ -115,7 +119,7 @@
                             'source': 'liveflights',
                             'layout': {
                             'icon-image': 'custom-marker',
-                            'icon-size': 0.25,
+                            'icon-size': 0.40,
                                         'icon-rotate': ['get', 'dir']
                 
                             }
@@ -195,11 +199,24 @@
         register_setting('ironsky-settings', 'airlabs_api_key');
         // Registro de la configuración para Mapbox API Key
         register_setting('ironsky-settings', 'mapbox_api_key');
-
+        // Registro de la configuración para ancho
+        register_setting('ironsky-settings', 'map_width');
+        // Registro de la configuración para alto
+        register_setting('ironsky-settings', 'map_height');
+        // Registro de la configuración para zoom
+        register_setting('ironsky-settings', 'map_zoom');
+        /*
+        // Registro de la configuración para pitch
+        register_setting('ironsky-settings', 'map_pitch');
+        // Registro de la configuración para lat
+        register_setting('ironsky-settings', 'map_center_lat');
+        // Registro de la configuración para lon
+        register_setting('ironsky-settings', 'map_center_lon');
+        */
         // sección de configuración
         add_settings_section(
             'ironsky_settings_section',
-            'Configuraciones de API',
+            'Configuraciones de APIs y mapa',
             'ironsky_settings_section_callback',
             'ironsky-settings'
         );
@@ -221,12 +238,36 @@
             'ironsky-settings',
             'ironsky_settings_section'
         );
+        // Map width
+        add_settings_field(
+            'map_width_field',
+            'Map Width',
+            'map_width_field_callback',
+            'ironsky-settings',
+            'ironsky_settings_section'
+        );
+        // Map height
+        add_settings_field(
+            'map_height_field',
+            'Map Height',
+            'map_height_field_callback',
+            'ironsky-settings',
+            'ironsky_settings_section'
+        );
+        // Map zoom
+        add_settings_field(
+            'map_zoom_field',
+            'Map Zoom',
+            'map_zoom_field_callback',
+            'ironsky-settings',
+            'ironsky_settings_section'
+        );
     }
 
     add_action('admin_init', 'ironsky_register_settings');
 
     function ironsky_settings_section_callback() {
-        echo '<p>Introduce las claves API para IronSky.</p>';
+        echo '<p>Introduce la configuración de IronSky.</p>';
     }
 
     function airlabs_api_key_field_callback() {
@@ -241,6 +282,27 @@
         // Obtener el valor de Mapbox API Key
         $mapbox_api_key = get_option('mapbox_api_key');
         echo '<input type="text" name="mapbox_api_key" value="' . esc_attr($mapbox_api_key) . '">';
+    }
+    
+    function map_width_field_callback() {
+ 
+        // Obtener el valor de map_width_field
+        $map_width = get_option('map_width');
+        echo '<input type="text" name="map_width" value="' . esc_attr($map_width) . '">';
+    }
+    
+    function map_height_field_callback() {
+ 
+        // Obtener el valor de map_height_field
+        $map_height = get_option('map_height');
+        echo '<input type="text" name="map_height" value="' . esc_attr($map_height) . '">';
+    }
+    
+    function map_zoom_field_callback() {
+ 
+        // Obtener el valor de map_height_field
+        $map_zoom = get_option('map_zoom');
+        echo '<input type="text" name="map_zoom" value="' . esc_attr($map_zoom) . '">';
     }
 
     //Creo shortcode [ironsky]
