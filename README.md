@@ -29,7 +29,7 @@ airlabs:
 
 # Installation:
 
-Download: https://github.com/litoxperaloca/IronSky/releases/download/V1.0.0/ironsky.zip
+Download: https://github.com/litoxperaloca/IronSky/releases/download/V1.0/ironsky.zip
 
 Install and activate plugin from wp admin.
 
