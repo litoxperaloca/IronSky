@@ -4,16 +4,17 @@
         if (!current_user_can('manage_options')) {
             return;
         }
-
+		$imgSrc= '/wp-content/plugins/ironsky/assets/ironsky-logo.png';
         ?>
         <div class="wrap">
-            <h1>Configuración de IronSky</h1>
+            <h1>IronSky Config</h1>
+			<img src="<?php echo $imgSrc;?>"/>
             <form action="options.php" method="post">
                 <?php
                 // Opciones de seguridad, campos, etc.
                 settings_fields('ironsky-settings');
                 do_settings_sections('ironsky-settings');
-                submit_button('Guardar Cambios');
+                submit_button('Save');
                 ?>
             </form>
         </div>
@@ -42,7 +43,7 @@
         // sección de configuración
         add_settings_section(
             'ironsky_settings_section',
-            'Configuraciones de APIs y mapa',
+            'API keys & map settings',
             'ironsky_settings_section_callback',
             'ironsky-settings'
         );
@@ -93,7 +94,9 @@
     add_action('admin_init', 'ironsky_register_settings');
 
     function ironsky_settings_section_callback() {
-        echo '<p>Introduce la configuración de IronSky.</p>';
+        echo '<p>Edit IronSky settings.</p>
+			  <p>Get free apikey from mapbox: <a href="https://account.mapbox.com/">https://account.mapbox.com/</a> <br/>
+				Get free apikey from airlabs.co <a href="https://airlabs.co/signup">https://airlabs.co/signup</a></p>';
     }
 
     function airlabs_api_key_field_callback() {
