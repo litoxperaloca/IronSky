@@ -2,7 +2,7 @@
 	//Admin menu para settings
     function ironsky_add_admin_menu() {
         add_menu_page(
-            'Configuración de IronSky',   // Título de la página
+            'IronSky Config',   // Título de la página
             'IronSky',                    // Título del menú
             'manage_options',             // Capacidad requerida para ver este menú
             'ironsky-settings',           // Slug del menú
