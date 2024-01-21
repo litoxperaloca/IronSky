@@ -51,9 +51,9 @@
             //$mapbox_api_key = $instance['mapbox_api_key'];
             $airlabs_api_key = get_option('airlabs_api_key');
             $mapbox_api_key = get_option('mapbox_api_key');
-            $map_width = (!empty(get_option('map_width'))) ? strip_tags(get_option('map_width')) : 300;
-            $map_height = (!empty(get_option('map_height'))) ? strip_tags(get_option('map_height')) : 300;
-            $map_zoom = (!empty(get_option('map_zoom'))) ? strip_tags(get_option('map_zoom')) : 1;
+            $map_width = getValueFromWpAdminSettings('map_width',300);
+            $map_height = getValueFromWpAdminSettings('map_height',300);
+            $map_zoom = getValueFromWpAdminSettings('map_zoom',1);
             ?>
 	    <!-- Contenedor del mapa -->
             <div id='map' style='width: <?php echo $map_width; ?>px; height: <?php echo $map_height; ?>px;'></div>
