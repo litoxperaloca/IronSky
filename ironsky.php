@@ -9,7 +9,6 @@
     //Defino widget de IronSky
     class IronSky_Widget extends WP_Widget {
         
-
         public function __construct() {
             parent::__construct(
                 'ironsky_widget', 
@@ -17,9 +16,6 @@
                 array('description' => 'Muestra vuelos actuales en un mapa de Mapbox.')
             );
         }
-
-
-
 
         public function form($instance) {
             $airlabs_api_key = !empty($instance['airlabs_api_key']) ? $instance['airlabs_api_key'] : '';
@@ -48,7 +44,7 @@
 
 
         public function widget($args, $instance) {
-           echo $args['before_widget'];
+            echo $args['before_widget'];
             if (!empty($instance['title'])) {
                 echo $args['before_title'] . apply_filters('widget_title', $instance['title']) . $args['after_title'];
             }
@@ -58,12 +54,13 @@
             //$mapbox_api_key = $instance['mapbox_api_key'];
             $airlabs_api_key = get_option('airlabs_api_key');
             $mapbox_api_key = get_option('mapbox_api_key');
-            $map_width = get_option('map_width');
-            $map_height = get_option('map_height');
-            $map_zoom = get_option('map_zoom');
-
+            $map_width = (!empty(get_option('map_width'))) ? strip_tags(get_option('map_width')) : 300;
+            $map_height = (!empty(get_option('map_height'))) ? strip_tags(get_option('map_height')) : 300;
+            $map_zoom = (!empty(get_option('map_zoom'))) ? strip_tags(get_option('map_zoom')) : 1;
             ?>
+	    <!-- Contenedor del mapa -->
             <div id='map' style='width: <?php echo $map_width; ?>px; height: <?php echo $map_height; ?>px;'></div>
+	    <!-- css con mini ajustes -->
             <style>
                 .mapboxgl-popup, .mapboxgl-popup h5, .mapboxgl-popup p{
                 color: #000000 !important;
@@ -72,8 +69,11 @@
                 font-size: 10pt;
                 }
             </style>
+	    <!-- cargo mapa y vuelos -->
             <script>
+		//Cargo mapbox apikey desde la conf de admin menu
                 mapboxgl.accessToken = '<?php echo $mapbox_api_key; ?>';
+		//Creo mapa
                 const map = new mapboxgl.Map({
                     container: 'map', // container ID
                     style: 'mapbox://styles/litoxperaloca/clpeazft8006q01pg8fghbgdl', // style URL
@@ -83,65 +83,73 @@
                 });
                 map.on('load', async () => {
                       map.loadImage(
-                'https://ironplatform.com.uy/wp-content/uploads/2024/01/plane.png',
-                (error, image) => {
-                if (error) throw error;
-                map.addImage('custom-marker', image);
-                        fetch('https://airlabs.co/api/v9/flights?_fields=hex,flag,lat,lng,dir,alt&zoom=8&api_key=<?php echo $airlabs_api_key; ?>')
-                        .then( response => response.json())
-                        .then(data =>{
-                            //console.log(data);
-                        
-                          const flights = data.response.map(flight => ({
-                            type: 'Feature',
-                            properties: {
-                                hex: flight.hex,
-                                flag: flight.flag,
-                                dir: flight.dir,
-                                alt: flight.alt
-                            },
-                            geometry: {
-                                type: 'Point',
-                                coordinates: [flight.lng, flight.lat]
-                            }
-                            }));
-                            map.addSource('liveflights', {
-                            'type': 'geojson',
-                            'data': {
-                                    type: 'FeatureCollection',
-                                    features: flights
-                                }
-                            });
-                            // Add a symbol layer
-                            map.addLayer({
-                            'id': 'flights',
-                            'type': 'symbol',
-                            'source': 'liveflights',
-                            'layout': {
-                            'icon-image': 'custom-marker',
-                            'icon-size': 0.40,
-                                        'icon-rotate': ['get', 'dir']
-                
-                            }
-                            });
-                            map.on('click', 'flights', function(e) {
-                                var vuelo = e.features[0];
-                                var coordenadas = vuelo.geometry.coordinates.slice();
-                                var descripcion = '<br/><br/><br/><h5>Vuelo: ' + vuelo.properties.hex + '</h5><p>Flag: ' + vuelo.properties.flag + '</p><p>Altitud: ' + vuelo.properties.alt + ' metros</p>';
-                
-                                while (Math.abs(e.lngLat.lng - coordenadas[0]) > 180) {
-                                    coordenadas[0] += e.lngLat.lng > coordenadas[0] ? 360 : -360;
-                                }
-                
-                                    // Mostrar un Popup en la ubicación del clic con la información del vuelo
-                                    new mapboxgl.Popup()
-                                        .setLngLat(coordenadas)
-                                        .setHTML(descripcion)
-                                        .addTo(map);
-                                });
-                     
-                        })
-                        .catch(error => console.log(error));
+                	'https://ironplatform.com.uy/wp-content/uploads/2024/01/plane.png',
+	                (error, image) => {
+	                	if (error) throw error;
+	               		map.addImage('custom-marker', image);
+				
+				//Llamada a la api de vuelos
+	                        fetch('https://airlabs.co/api/v9/flights?_fields=hex,flag,lat,lng,dir,alt&zoom=8&api_key=<?php echo $airlabs_api_key; ?>')
+	                        .then( response => response.json())
+	                        .then(data =>{
+	                            //console.log(data);
+					
+	                            //FeatureCollection con la respuesta
+	                            const flights = data.response.map(flight => ({
+		                            type: 'Feature',
+		                            properties: {
+		                                hex: flight.hex,
+		                                flag: flight.flag,
+		                                dir: flight.dir,
+		                                alt: flight.alt
+		                            },
+		                            geometry: {
+		                                type: 'Point',
+		                                coordinates: [flight.lng, flight.lat]
+		                            }
+		                    }));
+					
+				    //Creo map source   	
+	                            map.addSource('liveflights', {
+	                            'type': 'geojson',
+	                            'data': {
+	                                    type: 'FeatureCollection',
+	                                    features: flights
+	                                }
+	                            });
+					
+	                            //Añado layer con el icono a la source creada
+	                            map.addLayer({
+		                        'id': 'flights',
+		                        'type': 'symbol',
+		                        'source': 'liveflights',
+		                        'layout': {
+			                        'icon-image': 'custom-marker',
+			                        'icon-size': 0.40,
+			                        'icon-rotate': ['get', 'dir']
+		                
+	                            	}
+	                            });
+
+				    //Agrego popup al clickear avion
+	                            map.on('click', 'flights', function(e) {
+	                                var vuelo = e.features[0];
+	                                var coordenadas = vuelo.geometry.coordinates.slice();
+	                                var descripcion = '<br/><br/><br/><h5>Vuelo: ' + vuelo.properties.hex + '</h5><p>Flag: ' + vuelo.properties.flag + '</p><p>Altitud: ' + vuelo.properties.alt + ' metros</p>';
+	                
+	                                while (Math.abs(e.lngLat.lng - coordenadas[0]) > 180) {
+	                                    coordenadas[0] += e.lngLat.lng > coordenadas[0] ? 360 : -360;
+	                                }
+	                
+	                                // Mostrar un Popup en la ubicación del clic con la información del vuelo
+	                                new mapboxgl.Popup()
+	                                        .setLngLat(coordenadas)
+	                                        .setHTML(descripcion)
+	                                        .addTo(map);
+	                                });
+	                     
+	                        })
+	                        .catch(error => console.log(error));
                     });
                 });
             </script>
@@ -153,8 +161,6 @@
     }
     //Fin clase widget
 	
-
-
 
     //hooks de WP
     
@@ -241,7 +247,7 @@
         // Map width
         add_settings_field(
             'map_width_field',
-            'Map Width',
+            'Map Width (px), default (leave empty) is 300',
             'map_width_field_callback',
             'ironsky-settings',
             'ironsky_settings_section'
@@ -249,7 +255,7 @@
         // Map height
         add_settings_field(
             'map_height_field',
-            'Map Height',
+            'Map Height (px), default (leave empty) is 300',
             'map_height_field_callback',
             'ironsky-settings',
             'ironsky_settings_section'
@@ -257,7 +263,7 @@
         // Map zoom
         add_settings_field(
             'map_zoom_field',
-            'Map Zoom',
+            'Map Zoom (1-16), default (leave empty) is 1',
             'map_zoom_field_callback',
             'ironsky-settings',
             'ironsky_settings_section'
@@ -320,8 +326,8 @@
 
     add_action('init', 'ironsky_register_shortcodes');
     
-    //agrego dependencisscexternas (js y css)
-	function ironsky_enqueue_scripts() {
+    //agrego dependencias cexternas (js y css)
+    function ironsky_enqueue_scripts() {
         //js de mapbox
         wp_enqueue_script('mapbox-gl-js', 'https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js', array(), null, false);
         //css mapbox
