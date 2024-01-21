@@ -6,8 +6,8 @@
         public function __construct() {
             parent::__construct(
                 'ironsky_widget', 
-                'IronSky: Vuelos en Tiempo Real', 
-                array('description' => 'Muestra vuelos actuales en un mapa de Mapbox.')
+                'IronSky: Realtime flights 3D Map', 
+                array('description' => 'This plugin shows a 3d mapbox map and loads realtime flights as map features.')
             );
         }
 
@@ -132,7 +132,7 @@
 	                            map.on('click', 'flights', function(e) {
 	                                var vuelo = e.features[0];
 	                                var coordenadas = vuelo.geometry.coordinates.slice();
-	                                var descripcion = '<br/><br/><br/><h5>Vuelo: ' + vuelo.properties.hex + '</h5><p>Flag: ' + vuelo.properties.flag + '</p><p>Altitud: ' + vuelo.properties.alt + ' metros</p>';
+	                                var descripcion = '<br/><br/><br/><h5>Flight ID: ' + vuelo.properties.hex + '</h5><p>Flag: ' + vuelo.properties.flag + '</p><p>Altitude: ' + vuelo.properties.alt + ' meters</p>';
 	                
 	                                while (Math.abs(e.lngLat.lng - coordenadas[0]) > 180) {
 	                                    coordenadas[0] += e.lngLat.lng > coordenadas[0] ? 360 : -360;
