@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: IronSky
- * Description: Muestra vuelos actuales en un mapa.
+ * Description: This plugin shows a 3d mapbox’s map and loads realtime flights as map’s features.
  * Version: 1.0
- * Author: Pablo Pignolo, from IronPlatform 
+ * Author: litoxperaloca / Pablo Pignolo, from IronPlatform 
  */
  
     // Incluir archivos de administración
